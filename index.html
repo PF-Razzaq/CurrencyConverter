@@ -20,7 +20,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            max-width: 90%;
             width: 100%;
         }
 
@@ -35,6 +35,7 @@
         }
 
         .dropdown-button {
+            width: 450px;
             background: #fff;
             border: 1px solid #ced4da;
             border-radius: 4px;
@@ -58,6 +59,12 @@
             z-index: 1000;
         }
 
+        .country-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
         .dropdown-item {
             padding: 10px;
             cursor: pointer;
@@ -72,52 +79,64 @@
         .dropdown.show .dropdown-menu {
             display: block;
         }
+
+        .form-control {
+            width: 334px;
+            padding: 22px 10px;
+
+        }
     </style>
 </head>
 
 <body>
     <div class="converter">
         <h2 class="text-center">Currency Converter</h2>
-        <div class="form-group">
-            <input type="number" class="form-control" id="amount" placeholder="Enter amount">
+        <div class="d-flex justify-content-between">
+            <div class="form-group">
+                <label for="">Amount</label>
+
+                <input type="number" class="form-control amount" id="amount" placeholder="Enter amount">
+            </div>
+            <div class="form-group dropdown" id="fromDropdown">
+                <label for="">Select Country From:</label>
+                <div class="dropdown-button" id="fromButton">
+                    <!-- Default value will be set here -->
+                </div>
+                <div class="dropdown-menu" id="fromMenu">
+                    <!-- Options will be added here dynamically -->
+                </div>
+            </div>
+            <div class="form-group dropdown" id="toDropdown">
+                <label for="">Select Country To:</label>
+
+                <div class="dropdown-button" id="toButton">
+                    <!-- Default value will be set here -->
+                </div>
+                <div class="dropdown-menu" id="toMenu">
+                    <!-- Options will be added here dynamically -->
+                </div>
+            </div>
         </div>
-        <div class="form-group dropdown" id="fromDropdown">
-            <div class="dropdown-button" id="fromButton">
-                Select Country
-                <span style="margin-left: 13rem;" class="caret">&#9660;</span>
-            </div>
-            <div class="dropdown-menu" id="fromMenu">
-                <!-- Options will be added here dynamically -->
-            </div>
-        </div>
-        <div class="form-group dropdown" id="toDropdown">
-            <div class="dropdown-button" id="toButton">
-                Select Country
-                <span style="margin-left: 13rem;" class="caret">&#9660;</span>
-            </div>
-            <div class="dropdown-menu" id="toMenu">
-                <!-- Options will be added here dynamically -->
-            </div>
-        </div>
-        <button class="btn btn-primary btn-block" onclick="convertCurrency()">Convert</button>
+        <button class="btn w-25 btn-primary btn-block convert-btn" onclick="convertCurrency()">Calculate</button>
         <p id="result" class="text-center mt-3"></p>
     </div>
 
     <script>
         const currencyData = [
+            { "country": "United States", "currency_code": "USD", "currency_symbol": "$", "flag": "./img/um.svg" },
             { "country": "Afghanistan", "currency_code": "AFN", "currency_symbol": "؋", "flag": "./img/af.svg" },
             { "country": "Albania", "currency_code": "ALL", "currency_symbol": "L", "flag": "./img/al.svg" },
             { "country": "Algeria", "currency_code": "DZD", "currency_symbol": "دج", "flag": "./img/dz.svg" },
             { "country": "Andorra", "currency_code": "EUR", "currency_symbol": "€", "flag": "./img/ad.svg" },
             { "country": "Angola", "currency_code": "AOA", "currency_symbol": "Kz", "flag": "./img/ao.svg" },
             { "country": "Argentina", "currency_code": "ARS", "currency_symbol": "$", "flag": "./img/ar.svg" },
-            { "country": "Pakistan", "currency_code": "PKR", "currency_symbol": "₨", "flag": "./img/pk.svg" },
-            { "country": "United States", "currency_code": "USD", "currency_symbol": "$", "flag": "./img/um.svg" }
+            { "country": "Pakistan", "currency_code": "PKR", "currency_symbol": "₨", "flag": "./img/pk.svg" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
             populateCurrencyOptions();
             setupDropdowns();
+            setDefaultValues();
         });
 
         function populateCurrencyOptions() {
@@ -128,13 +147,13 @@
                 const fromItem = document.createElement('div');
                 fromItem.classList.add('dropdown-item');
                 fromItem.dataset.value = currency.currency_code;
-                fromItem.innerHTML = `<img src="${currency.flag}" class="flag-icon"> ${currency.currency_code}`;
+                fromItem.innerHTML = `<img src="${currency.flag}" class="flag-icon"> ${currency.currency_code} <span class="country-name">${currency.country}</span>`;
                 fromMenu.appendChild(fromItem);
 
                 const toItem = document.createElement('div');
                 toItem.classList.add('dropdown-item');
                 toItem.dataset.value = currency.currency_code;
-                toItem.innerHTML = `<img src="${currency.flag}" class="flag-icon"> ${currency.currency_code}`;
+                toItem.innerHTML = `<img src="${currency.flag}" class="flag-icon"> ${currency.currency_code} <span class="country-name">${currency.country}</span>`;
                 toMenu.appendChild(toItem);
             });
         }
@@ -158,7 +177,6 @@
                     fromButton.innerHTML = event.target.innerHTML;
                     fromButton.dataset.value = event.target.dataset.value;
                     fromMenu.classList.remove('show');
-                    convertCurrency();
                 }
             });
 
@@ -167,9 +185,20 @@
                     toButton.innerHTML = event.target.innerHTML;
                     toButton.dataset.value = event.target.dataset.value;
                     toMenu.classList.remove('show');
-                    convertCurrency();
                 }
             });
+        }
+
+        function setDefaultValues() {
+            const defaultCurrency = currencyData[0]; // Get the first currency in the array
+
+            const fromButton = document.getElementById('fromButton');
+            fromButton.innerHTML = `<img src="${defaultCurrency.flag}" class="flag-icon"> ${defaultCurrency.currency_code} <span class="country-name">${defaultCurrency.country}</span>`;
+            fromButton.dataset.value = defaultCurrency.currency_code;
+
+            const toButton = document.getElementById('toButton');
+            toButton.innerHTML = `<img src="${defaultCurrency.flag}" class="flag-icon"> ${defaultCurrency.currency_code} <span class="country-name">${defaultCurrency.country}</span>`;
+            toButton.dataset.value = defaultCurrency.currency_code;
         }
 
         function convertCurrency() {
@@ -191,8 +220,8 @@
                     const convertedAmount = amount * rate;
                     const finalAmount = convertedAmount * 1.05; // Add 5%
                     document.getElementById('result').innerHTML = `
-                        <p>Converted Amount: ${convertedAmount.toFixed(4)} ${toCurrency}</p>
-                        <p>Final Amount (with 5% added): ${finalAmount.toFixed(4)} ${toCurrency}</p>
+                        <p>Converted Amount: ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p>Final Amount (with 5% added): ${finalAmount.toFixed(3)} ${toCurrency}</p>
                     `;
                 })
                 .catch(error => {
