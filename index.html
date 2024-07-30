@@ -94,7 +94,6 @@
         <div class="d-flex justify-content-between">
             <div class="form-group">
                 <label for="">Amount</label>
-
                 <input type="number" class="form-control amount" id="amount" placeholder="Enter amount">
             </div>
             <div class="form-group dropdown" id="fromDropdown">
@@ -108,7 +107,6 @@
             </div>
             <div class="form-group dropdown" id="toDropdown">
                 <label for="">Select Country To:</label>
-
                 <div class="dropdown-button" id="toButton">
                     <!-- Default value will be set here -->
                 </div>
@@ -212,15 +210,24 @@
             }
 
             const url = `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`;
+
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const rate = data.rates[toCurrency];
                     const convertedAmount = amount * rate;
                     const finalAmount = convertedAmount * 1.05; // Add 5%
+                    const fromCountry = currencyData.find(currency => currency.currency_code === fromCurrency).country;
+                    const toCountry = currencyData.find(currency => currency.currency_code === toCurrency).country;
+                    const rateconvert = amount / rate;
                     document.getElementById('result').innerHTML = `
-                        <p><span>${amount} </span> <span>Usa</span>  ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p>${amount} ${fromCurrency} = ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p>${fromCurrency}-${fromCountry} = ${toCurrency}-${toCurrency}</p>
                         <p>Final Amount (with 5% added): ${finalAmount.toFixed(3)} ${toCurrency}</p>
+                        <div class="d-flex text-center">                        
+                        <p class="mr-5">1 ${fromCurrency}= ${rate.toFixed(3)} ${toCurrency}</p>
+                        <p>1  ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
+                        </div>
                     `;
                 })
                 .catch(error => {
