@@ -83,7 +83,6 @@
         .form-control {
             width: 334px;
             padding: 22px 10px;
-
         }
     </style>
 </head>
@@ -121,14 +120,14 @@
 
     <script>
         const currencyData = [
-            { "country": "United States", "currency_code": "USD", "currency_symbol": "$", "flag": "./img/um.svg" },
-            { "country": "Afghanistan", "currency_code": "AFN", "currency_symbol": "؋", "flag": "./img/af.svg" },
-            { "country": "Albania", "currency_code": "ALL", "currency_symbol": "L", "flag": "./img/al.svg" },
-            { "country": "Algeria", "currency_code": "DZD", "currency_symbol": "دج", "flag": "./img/dz.svg" },
-            { "country": "Andorra", "currency_code": "EUR", "currency_symbol": "€", "flag": "./img/ad.svg" },
-            { "country": "Angola", "currency_code": "AOA", "currency_symbol": "Kz", "flag": "./img/ao.svg" },
-            { "country": "Argentina", "currency_code": "ARS", "currency_symbol": "$", "flag": "./img/ar.svg" },
-            { "country": "Pakistan", "currency_code": "PKR", "currency_symbol": "₨", "flag": "./img/pk.svg" }
+            { "country": "United States", "currency_code": "USD", "currency_symbol": "$", "flag": "./img/um.svg", "currency_name": "UNITED STATES DOLLAR" },
+            { "country": "Afghanistan", "currency_code": "AFN", "currency_symbol": "؋", "flag": "./img/af.svg", "currency_name": "AFGHAN AFGHANI" },
+            { "country": "Albania", "currency_code": "ALL", "currency_symbol": "L", "flag": "./img/al.svg", "currency_name": "ALBANIAN LEK" },
+            { "country": "Algeria", "currency_code": "DZD", "currency_symbol": "دج", "flag": "./img/dz.svg", "currency_name": "ALGERIAN DINAR" },
+            { "country": "Andorra", "currency_code": "EUR", "currency_symbol": "€", "flag": "./img/ad.svg", "currency_name": "EURO" },
+            { "country": "Angola", "currency_code": "AOA", "currency_symbol": "Kz", "flag": "./img/ao.svg", "currency_name": "ANGOLAN KWANZA" },
+            { "country": "Argentina", "currency_code": "ARS", "currency_symbol": "$", "flag": "./img/ar.svg", "currency_name": "ARGENTINE PESO" },
+            { "country": "Pakistan", "currency_code": "PKR", "currency_symbol": "₨", "flag": "./img/pk.svg", "currency_name": "PAKISTANI RUPEE" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -217,16 +216,15 @@
                     const rate = data.rates[toCurrency];
                     const convertedAmount = amount * rate;
                     const finalAmount = convertedAmount * 1.05; // Add 5%
-                    const fromCountry = currencyData.find(currency => currency.currency_code === fromCurrency).country;
-                    const toCountry = currencyData.find(currency => currency.currency_code === toCurrency).country;
-                    const rateconvert = amount / rate;
+                    const fromCurrencyData = currencyData.find(currency => currency.currency_code === fromCurrency);
+                    const toCurrencyData = currencyData.find(currency => currency.currency_code === toCurrency);
+                    const rateconvert = 1 / rate;
                     document.getElementById('result').innerHTML = `
                         <p>${amount} ${fromCurrency} = ${convertedAmount.toFixed(3)} ${toCurrency}</p>
-                        <p>${fromCurrency}-${fromCountry} = ${toCurrency}-${toCurrency}</p>
-                        <p>Final Amount (with 5% added): ${finalAmount.toFixed(3)} ${toCurrency}</p>
-                        <div class="d-flex text-center">                        
-                        <p class="mr-5">1 ${fromCurrency}= ${rate.toFixed(3)} ${toCurrency}</p>
-                        <p>1  ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
+                        <p>${fromCurrency} - ${fromCurrencyData.currency_name} = ${toCurrency} - ${toCurrencyData.currency_name}</p>
+                        <div class="d-flex justify-content-center">                        
+                        <p class="mr-5">1 ${fromCurrency} = ${rate.toFixed(3)} ${toCurrency}</p>
+                        <p>1 ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
                         </div>
                     `;
                 })
