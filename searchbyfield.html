@@ -59,6 +59,20 @@
             z-index: 1000;
         }
 
+        .search-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .country-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
         .dropdown-item {
             padding: 10px;
             cursor: pointer;
@@ -78,12 +92,6 @@
             width: 334px;
             padding: 22px 10px;
         }
-
-        .country-name {
-            font-size: 13px;
-            font-weight: 700;
-            margin-left: 10px;
-        }
     </style>
 </head>
 
@@ -101,6 +109,7 @@
                     <!-- Default value will be set here -->
                 </div>
                 <div class="dropdown-menu" id="fromMenu">
+                    <input type="text" class="search-input" placeholder="Search...">
                     <!-- Options will be added here dynamically -->
                 </div>
             </div>
@@ -110,6 +119,7 @@
                     <!-- Default value will be set here -->
                 </div>
                 <div class="dropdown-menu" id="toMenu">
+                    <input type="text" class="search-input" placeholder="Search...">
                     <!-- Options will be added here dynamically -->
                 </div>
             </div>
@@ -165,12 +175,12 @@
 
             fromButton.addEventListener('click', () => {
                 fromMenu.classList.toggle('show');
-                fromMenu.focus(); // Focus for keypress event
+                fromMenu.querySelector('.search-input').focus(); // Focus the search input
             });
 
             toButton.addEventListener('click', () => {
                 toMenu.classList.toggle('show');
-                toMenu.focus(); // Focus for keypress event
+                toMenu.querySelector('.search-input').focus(); // Focus the search input
             });
 
             fromMenu.addEventListener('click', (event) => {
@@ -189,42 +199,36 @@
                 }
             });
 
-            // Add keypress event listeners
-            addKeypressFilter(fromMenu);
-            addKeypressFilter(toMenu);
+            // Add search functionality with delay
+            addSearchFunctionality(fromMenu);
+            addSearchFunctionality(toMenu);
         }
 
-        function addKeypressFilter(menu) {
-            let filter = '';
-            let timer;
+        function addSearchFunctionality(menu) {
+            const searchInput = menu.querySelector('.search-input');
+            let filterTimeout;
 
-            menu.addEventListener('keydown', (event) => {
-                const key = event.key.toLowerCase();
-                if (key.length === 1 && /^[a-z]$/i.test(key)) { // Filter only on single alphabetic key presses
-                    filter = key;
-                    filter = filter.toLowerCase();
-
-                    const items = menu.querySelectorAll('.dropdown-item');
-                    items.forEach(item => {
-                        const countryName = item.querySelector('.country-name').textContent.toLowerCase();
-                        if (countryName.includes(filter)) { // Updated filter condition
-                            item.style.display = '';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-
-                    // Reset filter after 1 second of inactivity
-                    clearTimeout(timer);
-                    timer = setTimeout(() => {
-                        filter = '';
-                        items.forEach(item => item.style.display = '');
-                    }, 30000);
-                }
+            searchInput.addEventListener('input', () => {
+                clearTimeout(filterTimeout); // Clear previous timeout
+                filterTimeout = setTimeout(() => {
+                    filterItems(menu, searchInput.value.toLowerCase());
+                }); // 30-second delay
             });
 
             // Ensure menu is focusable and visible for keydown events
             menu.tabIndex = 0;
+        }
+
+        function filterItems(menu, filter) {
+            const items = menu.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                const countryName = item.querySelector('.country-name').textContent.toLowerCase();
+                if (countryName.includes(filter)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         function setDefaultValues() {
@@ -261,13 +265,13 @@
                     const toCurrencyData = currencyData.find(currency => currency.currency_code === toCurrency);
                     const rateconvert = 1 / rate;
                     document.getElementById('result').innerHTML = `
-                <p>${amount} ${fromCurrency} = ${convertedAmount.toFixed(3)} ${toCurrency}</p>
-                <p>${fromCurrency} - ${fromCurrencyData.currency_name} = ${toCurrency} - ${toCurrencyData.currency_name}</p>
-                <div class="d-flex justify-content-center">                        
-                <p class="mr-5">1 ${fromCurrency} = ${rate.toFixed(3)} ${toCurrency}</p>
-                <p>1 ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
-                </div>
-            `;
+                        <p>${amount} ${fromCurrency} = ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p>${fromCurrency} - ${fromCurrencyData.currency_name} = ${toCurrency} - ${toCurrencyData.currency_name}</p>
+                        <div class="d-flex justify-content-center">                        
+                        <p class="mr-5">1 ${fromCurrency} = ${rate.toFixed(3)} ${toCurrency}</p>
+                        <p>1 ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
+                        </div>
+                    `;
                 })
                 .catch(error => {
                     console.error('Error fetching exchange rates:', error);

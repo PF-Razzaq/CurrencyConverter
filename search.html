@@ -59,6 +59,12 @@
             z-index: 1000;
         }
 
+        .country-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
         .dropdown-item {
             padding: 10px;
             cursor: pointer;
@@ -77,12 +83,6 @@
         .form-control {
             width: 334px;
             padding: 22px 10px;
-        }
-
-        .country-name {
-            font-size: 13px;
-            font-weight: 700;
-            margin-left: 10px;
         }
     </style>
 </head>
@@ -201,13 +201,13 @@
             menu.addEventListener('keydown', (event) => {
                 const key = event.key.toLowerCase();
                 if (key.length === 1 && /^[a-z]$/i.test(key)) { // Filter only on single alphabetic key presses
-                    filter = key;
+                    filter += key;
                     filter = filter.toLowerCase();
 
                     const items = menu.querySelectorAll('.dropdown-item');
                     items.forEach(item => {
                         const countryName = item.querySelector('.country-name').textContent.toLowerCase();
-                        if (countryName.includes(filter)) { // Updated filter condition
+                        if (countryName.startsWith(filter)) {
                             item.style.display = '';
                         } else {
                             item.style.display = 'none';
@@ -219,7 +219,7 @@
                     timer = setTimeout(() => {
                         filter = '';
                         items.forEach(item => item.style.display = '');
-                    }, 30000);
+                    }, 1000);
                 }
             });
 
@@ -274,6 +274,7 @@
                     document.getElementById('result').innerText = 'Error fetching exchange rates';
                 });
         }
+
     </script>
 </body>
 
