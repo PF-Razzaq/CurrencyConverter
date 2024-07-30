@@ -212,7 +212,6 @@
             }
 
             const url = `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`;
-
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -220,7 +219,7 @@
                     const convertedAmount = amount * rate;
                     const finalAmount = convertedAmount * 1.05; // Add 5%
                     document.getElementById('result').innerHTML = `
-                        <p>Converted Amount: ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p><span>${amount} </span> <span>Usa</span>  ${convertedAmount.toFixed(3)} ${toCurrency}</p>
                         <p>Final Amount (with 5% added): ${finalAmount.toFixed(3)} ${toCurrency}</p>
                     `;
                 })
