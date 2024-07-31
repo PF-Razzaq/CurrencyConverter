@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #06A6FD;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #121F7E;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: orange;
+        }
+
+        .converter {
+            max-width: 364%;
+            width: 90%;
+            margin: auto;
+        }
+
+        .converter .flag-icon {
+            width: 20px;
+            height: 15px;
+            margin-right: 8px;
+        }
+
+        .converter .form-group {
+            margin: auto;
+            width: 68.5%;
+            display: inline-block;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+
+        .converter .dropdown {
+            position: relative;
+        }
+
+        .converter .dropdown-button {
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .converter .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .converter .dropdown-item {
+            padding: 4px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .converter .dropdown-item:hover {
+            background: #f1f1f1;
+        }
+
+        .converter .dropdown.show .dropdown-menu {
+            display: block;
+        }
+
+        .converter .form-control {
+            width: 100%;
+            padding: 22px 10px;
+            text-align: center;
+        }
+
+        .form-group {
+            text-align: center;
+        }
+
+        .justify-content-between label {
+            color: #fff;
+        }
+
+        #fromDropdown,
+        #toDropdown {
+            width: 47%;
+            display: inline-block;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+
+        .converter .dropdown-menu.show {
+            display: block;
+        }
+
+        .converter .country-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .btn.w-25.btn-primary.btn-block.convert-btn {
+            background: linear-gradient(180deg, #FD0707 0%, #FD8406 100%);
+            color: #fff;
+            padding: 14px 13px;
+            text-transform: capitalize;
+            border-radius: 0px;
+            width: 25%;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+
+        .btn.w-25.btn-primary.btn-block.convert-btn:hover {
+            background: linear-gradient(156deg, #183A7E 10%, #06A6FD 88%);
+        }
+
+        #result p {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 0px;
+            font-size: 13px;
+            padding-top: 7px;
+        }
+
+        #result>p:nth-child(1) {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .d-flex.justify-content-center {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #result .d-flex.justify-content-center p {
+            width: 47%;
+            display: inline-block;
+            margin: auto;
+            text-align: center !important;
+        }
+
+        #result {
+            background: #06A6FD;
+            margin: 20px auto;
+            max-width: 380px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .converter {
+                max-width: 364%;
+                width: 100%;
+                margin: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="converter">
+        <div class="justify-content-between">
+            <div class="form-group">
+                <label for="">Amount</label><br>
+                <input type="number" class="form-control amount" id="amount" placeholder="Enter amount">
+            </div>
+            <button class="btn w-25 btn-primary btn-block convert-btn" onclick="convertCurrency()">Convert</button>
+            <div class="form-group dropdown" id="fromDropdown">
+                <label for="">Select Country From:</label>
+                <div class="dropdown-button" id="fromButton">
+                    <!-- Default value will be set here -->
+                </div>
+                <div class="dropdown-menu" id="fromMenu">
+                    <!-- Options will be added here dynamically -->
+                </div>
+            </div>
+            <div class="form-group dropdown" id="toDropdown">
+                <label for="">Select Country To:</label>
+                <div class="dropdown-button" id="toButton">
+                    <!-- Default value will be set here -->
+                </div>
+                <div class="dropdown-menu" id="toMenu">
+                    <!-- Options will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+        <p id="result" class="text-center mt-3"></p>
+    </div>
+
+    <script>
+        const currencyData = [
+            { "country": "United States", "currency_code": "USD", "currency_symbol": "$", "flag": "./img/um.svg", "currency_name": "UNITED STATES DOLLAR" },
+            { "country": "Afghanistan", "currency_code": "AFN", "currency_symbol": "؋", "flag": "./img/af.svg", "currency_name": "AFGHAN AFGHANI" },
+            { "country": "Albania", "currency_code": "ALL", "currency_symbol": "L", "flag": "./img/al.svg", "currency_name": "ALBANIAN LEK" },
+            { "country": "Algeria", "currency_code": "DZD", "currency_symbol": "دج", "flag": "./img/dz.svg", "currency_name": "ALGERIAN DINAR" },
+            { "country": "Andorra", "currency_code": "EUR", "currency_symbol": "€", "flag": "./img/ad.svg", "currency_name": "EURO" },
+            { "country": "Angola", "currency_code": "AOA", "currency_symbol": "Kz", "flag": "./img/ao.svg", "currency_name": "ANGOLAN KWANZA" },
+            { "country": "Argentina", "currency_code": "ARS", "currency_symbol": "$", "flag": "./img/ar.svg", "currency_name": "ARGENTINE PESO" },
+            { "country": "Pakistan", "currency_code": "PKR", "currency_symbol": "₨", "flag": "./img/pk.svg", "currency_name": "PAKISTANI RUPEE" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateCurrencyOptions();
+            setupDropdowns();
+            setDefaultValues();
+        });
+
+        function populateCurrencyOptions() {
+            const fromMenu = document.getElementById('fromMenu');
+            const toMenu = document.getElementById('toMenu');
+
+            currencyData.forEach(currency => {
+                const fromItem = createDropdownItem(currency);
+                fromMenu.appendChild(fromItem);
+
+                const toItem = createDropdownItem(currency);
+                toMenu.appendChild(toItem);
+            });
+        }
+
+        function createDropdownItem(currency) {
+            const item = document.createElement('div');
+            item.classList.add('dropdown-item');
+            item.dataset.value = currency.currency_code;
+            item.innerHTML = `<img src="${currency.flag}" class="flag-icon"> ${currency.currency_code} <span class="country-name">${currency.country}</span>`;
+            return item;
+        }
+
+        function setupDropdowns() {
+            const fromButton = document.getElementById('fromButton');
+            const toButton = document.getElementById('toButton');
+            const fromMenu = document.getElementById('fromMenu');
+            const toMenu = document.getElementById('toMenu');
+
+            fromButton.addEventListener('click', () => {
+                fromMenu.classList.toggle('show');
+                fromMenu.focus(); // Focus for keypress event
+            });
+
+            toButton.addEventListener('click', () => {
+                toMenu.classList.toggle('show');
+                toMenu.focus(); // Focus for keypress event
+            });
+
+            fromMenu.addEventListener('click', (event) => {
+                if (event.target.classList.contains('dropdown-item')) {
+                    fromButton.innerHTML = event.target.innerHTML;
+                    fromButton.dataset.value = event.target.dataset.value;
+                    fromMenu.classList.remove('show');
+                }
+            });
+
+            toMenu.addEventListener('click', (event) => {
+                if (event.target.classList.contains('dropdown-item')) {
+                    toButton.innerHTML = event.target.innerHTML;
+                    toButton.dataset.value = event.target.dataset.value;
+                    toMenu.classList.remove('show');
+                }
+            });
+
+            // Add keypress event listeners
+            addKeypressFilter(fromMenu);
+            addKeypressFilter(toMenu);
+        }
+
+        function addKeypressFilter(menu) {
+            let filter = '';
+            let timer;
+
+            menu.addEventListener('keydown', (event) => {
+                const key = event.key.toLowerCase();
+                if (key.length === 1 && /^[a-z]$/i.test(key)) { // Filter only on single alphabetic key presses
+                    filter = key;
+                    filter = filter.toLowerCase();
+
+                    const items = menu.querySelectorAll('.dropdown-item');
+                    items.forEach(item => {
+                        const countryName = item.querySelector('.country-name').textContent.toLowerCase();
+                        if (countryName.includes(filter)) { // Updated filter condition
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Reset filter after 1 second of inactivity
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        filter = '';
+                        items.forEach(item => item.style.display = '');
+                    }, 3000);
+                }
+            });
+
+            // Ensure menu is focusable and visible for keydown events
+            menu.tabIndex = 0;
+        }
+
+        function setDefaultValues() {
+            const defaultCurrency = currencyData[0]; // Get the first currency in the array
+
+            const fromButton = document.getElementById('fromButton');
+            fromButton.innerHTML = `<img src="${defaultCurrency.flag}" class="flag-icon"> ${defaultCurrency.currency_code} <span class="country-name">${defaultCurrency.country}</span>`;
+            fromButton.dataset.value = defaultCurrency.currency_code;
+
+            const toButton = document.getElementById('toButton');
+            toButton.innerHTML = `<img src="${defaultCurrency.flag}" class="flag-icon"> ${defaultCurrency.currency_code} <span class="country-name">${defaultCurrency.country}</span>`;
+            toButton.dataset.value = defaultCurrency.currency_code;
+        }
+
+        function convertCurrency() {
+            const amount = document.getElementById('amount').value;
+            const fromCurrency = document.getElementById('fromButton').dataset.value;
+            const toCurrency = document.getElementById('toButton').dataset.value;
+
+            if (amount === '' || isNaN(amount)) {
+                document.getElementById('result').innerText = 'PLEASE ENTER A VALID AMOUNT';
+                return;
+            }
+
+            const url = `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const rate = data.rates[toCurrency];
+                    const convertedAmount = amount * rate;
+                    const finalAmount = convertedAmount * 1.05; // Add 5%
+                    const fromCurrencyData = currencyData.find(currency => currency.currency_code === fromCurrency);
+                    const toCurrencyData = currencyData.find(currency => currency.currency_code === toCurrency);
+                    const rateconvert = 1 / rate;
+                    document.getElementById('result').innerHTML = `
+                        <p>${amount} ${fromCurrency} = ${convertedAmount.toFixed(3)} ${toCurrency}</p>
+                        <p>${fromCurrency} - ${fromCurrencyData.currency_name} = ${toCurrency} - ${toCurrencyData.currency_name}</p>
+                        <div class="d-flex justify-content-center">
+                            <p class="mr-5">1 ${fromCurrency} = ${rate.toFixed(3)} ${toCurrency}</p>
+                            <p>1 ${toCurrency} = ${rateconvert.toFixed(3)} ${fromCurrency}</p>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching exchange rates:', error);
+                    document.getElementById('result').innerText = 'Error fetching exchange rates';
+                });
+        }
+    </script>
+</body>
+
+</html>
